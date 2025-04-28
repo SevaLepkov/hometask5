@@ -16,89 +16,19 @@ enum class Color : int
     Unknown
 };
 
-enum class qualityEnum : int
-{
-    whole,
-    spoiled,
-    rotten,
-
-    None
-};
-
-class TestStrategy{
-public:
-    virtual ~TestStrategy(){}
-    virtual void test() = 0;
-};
-
-class TestWholeStrategy : public TestStrategy
-{
-    void test() {cout << "amam delishes";}
-};
-class TestSpoiledStrategy : public TestStrategy
-{
-    void test() {cout << "fuuu is junk";}
-};
-class TestRottenStrategy : public TestStrategy
-{
-    void test() {cout << "is not wear testy";}
-};
-
-
-TestStrategy *CreateTestStrategy(qualityEnum testManner)
- {
-   switch(testManner)
-   {
-     case qualityEnum::whole: return new TestWholeStrategy;
-     case qualityEnum::spoiled: return new TestSpoiledStrategy;
-     case qualityEnum::rotten: return new TestRottenStrategy;
-
-     default: return nullptr;
-   }
- }
-
-
 class vegetable {
-private:
-    int weight = 1;
-    Color color;
-    //bool children;
-    TestStrategy *testManner;
-
-    void DoTestUsingStrategy() {
-        if(testManner == nullptr)
-        {
-            cout << "Do nothing!";
-            return;
-        }
-        else
-        {
-            testManner -> test();
-        }
-    }
-    void DetectedSeed()
-    {
-        if(Haveseed()){
-            cout << "need extract";
-        }
-        else{
-            cout << "all good";
-        }
-    }
-
 protected:
+    Color color;
+    int weight = 1;
     int lenght = 1;
     bool seed;
-
 public:
-    ~vegetable(){
-        if (testManner != nullptr) delete testManner;
-    };
-    vegetable(Color color) :weight(55), color(color), lenght(165), seed(false), testManner(nullptr) {
+    ~vegetable(){};
+    vegetable(Color color) :weight(55), color(color), lenght(165), seed(false) {
         seed = static_cast<bool>(rand() % 2);
     }
 
-    bool Haveseed() const { return seed; }
+     bool Haveseed() const { return seed; }
 
     Color GetColor() const { return color; }
 
@@ -113,45 +43,23 @@ public:
             cout << "Nice! no seed ) ";
         }
     }
-
-    virtual void printType() = 0;
-
-    virtual void Peel() = 0;
-    void test() {
-
-        printType();
-        cout << " : ";
-        DetectedSeed();
-        cout << " : ";
-
-        Cut();
-        cout << " : ";
-        DoTestUsingStrategy();
-        cout << endl;
-    }
-     void SetTestManner(TestStrategy *TManner)
-    {
-      testManner = TManner;
-    };
-
 };
 class cucumber : public vegetable {
 protected:
     bool taste = false;
 public:
-    cucumber() : vegetable(Color::Green) { SetTestManner(CreateTestStrategy(qualityEnum::whole)); }
-
+    cucumber();
     ~cucumber() { }//cout << "cucumber removed" << endl; }
     void Cut() override;
-    void printType(){cout << "cucumber";}
-    void Peel() {cout << "delete peel";}
 
 };
 
+cucumber::cucumber() : vegetable(Color::Green) {
+}
 void cucumber::Cut()
 {
     vegetable::Cut(); // Вызов функции, определенной в базовом классе
-    cout << "slicing cucumber";
+    cout << "slicing cucumber" << endl;
 }
 
 
@@ -159,20 +67,18 @@ class carot : public vegetable {
 protected:
     bool taste = false;
 public:
-    //carot();
-    carot() : vegetable(Color::Orange) { SetTestManner(CreateTestStrategy(qualityEnum::spoiled)); }
-
+    carot();
     ~carot() { }//cout << "carot removed" << endl; }
     void Cut() override;
-    void printType(){cout << "carot";}
-    void Peel() {cout << "wash peel";}
 
 };
 
+carot::carot() : vegetable(Color::Green) {
+}
 void carot::Cut()
 {
     vegetable::Cut(); // Вызов функции, определенной в базовом классе
-    cout << "slicing carot";
+    cout << "slicing carot" << endl;
 }
 
 
@@ -180,17 +86,18 @@ class tomato : public vegetable {
 protected:
     bool taste = true;
 public:
-    tomato() : vegetable(Color::Orange) { SetTestManner(CreateTestStrategy(qualityEnum::rotten)); }
+    tomato(); //cout << " tomato create" << endl; }
     ~tomato() { }//cout << "tomato removed" << endl; }
-    void printType(){cout << "tomato";}
-    void Peel() {cout << "no peel";}
+
     void Cut() override;
 };
 
+tomato::tomato() : vegetable(Color::Red) {
+}
 void tomato::Cut()
 {
     vegetable::Cut(); // Вызов функции, определенной в базовом классе
-    cout << "dicing a tomato";
+    cout << "dicing a tomato" << endl;
 }
 
 enum class vegetableType : int
@@ -285,21 +192,12 @@ public:
     }
 };
 
-void TestEmAll(Iterator<vegetable*> *it)
- {
-     for(it->First(); !it->IsDone(); it->Next())
-     {
-         vegetable *currentVegetable = it->GetCurrent();
-         currentVegetable->test();
-     }
- }
-
 
 int main()
 
 {
 
-    /*cout << "choose vegetable (1 - tomato, 2 - carot,  3 - cucumber)" << endl;
+    cout << "choose vegetable (1 - tomato, 2 - carot,  3 - cucumber)" << endl;
 
     vegetableType type = vegetableType::Undefined;
     int ii;
@@ -345,9 +243,7 @@ int main()
         carotStack.Push(newCarot);
     }
 
-    cout << "size steck carot: " << carotStack.Size() << endl;*/
-    int N = 6;
-
+    cout << "size steck carot: " << carotStack.Size() << endl;
 
 
 
@@ -397,39 +293,39 @@ int main()
 
         cout << endl << "size stack: " << vegetableStack.Size() << endl;
         Iterator<vegetable*> *it7 = vegetableStack.GetIterator();
-        TestEmAll(it7);
+        getAllVegetable(it7);
     cout << endl << "woman with black skin and children:" << endl;
-        Iterator<vegetable*>* seedSkinIt =
+        Iterator<vegetable*>* childSkinIt =
         new VegetableDecorator(new VegetableColorDecorator(vegetableStack.GetIterator(), Color::Green), true);
-        TestEmAll(seedSkinIt);
-        delete seedSkinIt;
+        getAllVegetable(childSkinIt);
+        delete childSkinIt;
 
     // Обход всех овощей с семечкой
     cout << "Array class "<< endl;
     cout << endl << "vegetable with seed:" << endl;
-    Iterator<vegetable*>* seedIt = new VegetableDecorator(vegetableArray.GetIterator(), true);
-    TestEmAll(seedIt);
-    delete seedIt;
+    Iterator<vegetable*>* childIt = new VegetableDecorator(vegetableArray.GetIterator(), true);
+    getAllVegetable(childIt);
+    delete childIt;
 
     // Обход всех зеленых овощей
     cout << endl << "vegetable with green color:" << endl;
-    Iterator<vegetable*>* ColorIt = new VegetableColorDecorator(vegetableArray.GetIterator(), Color::Green);
-    TestEmAll(ColorIt);
-    delete ColorIt;
+    Iterator<vegetable*>* SkinIt = new VegetableColorDecorator(vegetableArray.GetIterator(), Color::Green);
+    getAllVegetable(SkinIt);
+    delete SkinIt;
 
     // Обход всех зеленых овощей с семечком
     cout << endl << "vegetable with green color and have seed:" << endl;
-    Iterator<vegetable*>* haveseedIt =
+    Iterator<vegetable*>* haveChildIt =
     new VegetableDecorator(new VegetableColorDecorator(vegetableArray.GetIterator(), Color::Green), true);
-    TestEmAll( haveseedIt);
-    delete  haveseedIt;
+    getAllVegetable(haveChildIt);
+    delete haveChildIt;
 
     // Демонстрация работы адаптера
     cout << endl << "green vegetable with seed using adapted iterator (another container):" << endl;
     Iterator<vegetable*>* adaptedIt = new ConstIteratorAdapter<std::list<vegetable*>, vegetable*>(&vegetableVector);
-    Iterator<vegetable*>* adaptedGreenIt = new VegetableDecorator(new VegetableColorDecorator(adaptedIt, Color::Green), true);
-    TestEmAll(adaptedGreenIt);
-    delete adaptedGreenIt;
+    Iterator<vegetable*>* adaptedBlackIt = new VegetableDecorator(new VegetableColorDecorator(adaptedIt, Color::Green), true);
+    getAllVegetable(adaptedBlackIt);
+    delete adaptedBlackIt;
 
     cout << "STL vegetable:" << endl;
     vector<vegetable*> stlVector;
@@ -441,7 +337,7 @@ int main()
     }
 
         Iterator<vegetable*>* stlIt = new ConstIteratorAdapter<vector<vegetable*>, vegetable*>(&stlVector);
-        TestEmAll(stlIt);
+        getAllVegetable(stlIt);
         delete stlIt;
 
     return 0;
